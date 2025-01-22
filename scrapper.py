@@ -8,41 +8,42 @@ class Website_Scrapper:
         self.id = id
     
     # This will change in inheritance
-    def search_kw():
+    def search_kw(self, keywords):
         pass
 
-    def get_links():
+    def get_links(self, page):
         pass
 
-    def next_page():
+    def next_page(self, page):
         pass
 
-    def scroll_page():
-        pass
+    def scroll_page(self, page):
+        return page
     # Changing block ends here
 
-    def extract_link_content():
+    def extract_links_content(self, links):
         pass
 
 class Content_Cleaner:
-    def __init__(self,website):
-        self.website
+    def __init__(self,website, id):
+        self.website = website
+        self.id = id
 
-    def process_html(content):
+    def process_html(self, content):
         pass
 
 # This will change in inheritance
-    def extract_text(content):
+    def extract_text(self, content):
+        return
+    def extract_author(self, content):
         pass
-    def extract_author(content):
+    def extract_date(self, content):
         pass
-    def extract_date(content):
-        pass
-    def extract_images(content):
+    def extract_images(self, content):
         pass
 # Changing block ends here
 
-    def save_csv():
-        pass
-    def save_sql():
-        pass
+    def save_csv(self, text,author,date):
+        print("saved HTML:",text,author,date)
+    def save_sql(self, text,author,date):
+        print("saved csv:",text,author,date)
