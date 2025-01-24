@@ -6,19 +6,26 @@ class Website_Scrapper:
         self.website = website
         self.url = url
         self.id = id
+
+    def kw_pattern_maker(self, keyword):
+        keyword = keyword.replace(' ', '+')
+        pattern = "busca/?palavra="+keyword
+        return pattern
     
     # This will change in inheritance
-    def search_kw(self, keywords):
-        pass
+    def search_kw(self, keyword_pattern):
+        schema_url = "https://"
+        r = requests.get(schema_url+self.url+'/'+keyword_pattern)
+        page = r.text
+        print(schema_url+self.url+'/'+keyword_pattern)
+        return page
 
     def get_links(self, page):
         pass
 
-    def next_page(self, page):
+    def update_page(self, page):
         pass
 
-    def scroll_page(self, page):
-        return page
     # Changing block ends here
 
     def extract_links_content(self, links):
