@@ -25,12 +25,16 @@ def setup_search(sites):
 def run_search(keyword, website_search):
     links = []
     content = []
+    current_page = 1
     pattern = website_search.kw_pattern_maker(keyword)
-    page = website_search.search_kw(pattern)
+    page = website_search.search_kw(pattern, current_page)
     while page:
-        links.append(website_search.get_links(page))
+        new_links = website_search.get_links(page)
+        links.append(new_links)
+        if len(new_links) == 0:
+            break
         content.append(website_search.extract_links_content(links))
-        page = website_search.update_page(page)
+        page, current_page = website_search.next_page(keyword, current_page)
     return content
 
 def extract_content(cleaner, content):

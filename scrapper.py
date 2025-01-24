@@ -9,22 +9,28 @@ class Website_Scrapper:
 
     def kw_pattern_maker(self, keyword):
         keyword = keyword.replace(' ', '+')
-        pattern = "busca/?palavra="+keyword
+        pattern = keyword
         return pattern
     
     # This will change in inheritance
-    def search_kw(self, keyword_pattern):
+    def search_kw(self, keyword_pattern, current_page):
         schema_url = "https://"
-        r = requests.get(schema_url+self.url+'/'+keyword_pattern)
+        r = requests.get(schema_url+self.url+'/busca/p='+ str(current_page) +'&?palavra='+keyword_pattern)
         page = r.text
-        print(schema_url+self.url+'/'+keyword_pattern)
+        print(schema_url+self.url+'/busca/p='+ str(current_page) +'&?palavra='+keyword_pattern)
         return page
 
     def get_links(self, page):
-        pass
+        new_links = []
+        return new_links
 
     def update_page(self, page):
         pass
+
+    def next_page(self, keyword_pattern,current_page):
+        current_page += 1
+        page = self.search_kw(keyword_pattern,current_page)
+        return page, current_page
 
     # Changing block ends here
 
