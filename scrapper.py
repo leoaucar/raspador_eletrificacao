@@ -1,5 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
+
+#CORRIGIR MODO HEADLESS
+options = webdriver.FirefoxOptions()
+options.add_argument("--headless=new")
 
 class Website_Scrapper:
     def __init__(self,website,url,id):
@@ -14,14 +19,22 @@ class Website_Scrapper:
     
     # This will change in inheritance
     def search_kw(self, keyword_pattern, current_page):
+        driver = webdriver.Firefox()
         schema_url = "https://"
-        r = requests.get(schema_url+self.url+'/busca/p='+ str(current_page) +'&?palavra='+keyword_pattern)
-        page = r.text
-        print(schema_url+self.url+'/busca/p='+ str(current_page) +'&?palavra='+keyword_pattern)
+        final_url = schema_url+self.url+'/page/'+ str(current_page) +'/?s='+keyword_pattern
+        driver.get(final_url)
+        page = driver.page_source
+        driver.quit()
+        print("searching",final_url)
+        #r = requests.get(schema_url+self.url+'/page/'+ str(current_page) +'/?s='+keyword_pattern)
+        #page = r.text
         return page
 
     def get_links(self, page):
         new_links = []
+        soup = BeautifulSoup(page, "html.parser")
+        for link in soup.find_all('h2'):
+            new_links.append(link.find('a').get('href'))
         return new_links
 
     def update_page(self, page):

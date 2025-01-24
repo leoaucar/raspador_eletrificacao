@@ -8,6 +8,7 @@
 from interface import test_data, test_search
 from scrapper import Website_Scrapper, Content_Cleaner
 
+
 def setup_search(sites):
     search = {}
     for i in sites:
@@ -33,8 +34,8 @@ def run_search(keyword, website_search):
         links.append(new_links)
         if len(new_links) == 0:
             break
-        content.append(website_search.extract_links_content(links))
         page, current_page = website_search.next_page(keyword, current_page)
+    content.append(website_search.extract_links_content(links))
     return content
 
 def extract_content(cleaner, content):
