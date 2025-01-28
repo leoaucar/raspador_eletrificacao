@@ -48,12 +48,13 @@ def run_search(keyword, website_search,firefox_options):
 
 def extract_content(cleaner, content):
     processed_html = cleaner.process_html(content)
-    text = cleaner.extract_text(processed_html)
+    title = cleaner.extract_title(processed_html)
+    text = cleaner.extract_main_text(processed_html)
     author = cleaner.extract_author(processed_html)
     date = cleaner.extract_date(processed_html)
     #images = cleaner.extract_images(processed_html)
-    cleaner.save_sql(text,author,date)
-    cleaner.save_csv(text,author,date)
+    cleaner.save_sql(title,text,author,date)
+    cleaner.save_csv(title,text,author,date)
 
 def report_search():
     pass
@@ -66,8 +67,9 @@ for i in search:
         content = run_search(kw, search[i],firefox_options)
         if search[i].id == 0:
             cleaner = Content_Cleaner("padrao",0)
+            for i in content:
+                extract_content(cleaner,i)
         elif search[i].id == 1:
             pass
         else:
             print("error, no scrapper ID associated with ", i)
-        extract_content(cleaner,content)

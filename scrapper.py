@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import csv
 
 
 class Website_Scrapper:
@@ -59,20 +60,45 @@ class Content_Cleaner:
         self.id = id
 
     def process_html(self, content):
-        pass
+        soup = BeautifulSoup(content, "html.parser")
+        return soup
 
 # This will change in inheritance
-    def extract_text(self, content):
-        return
-    def extract_author(self, content):
+    def extract_title(self, soup):
+        title = soup.find('h1', class_="post-title single-post-title entry-title")
+        return title.text
+
+    def extract_main_text(self, soup):
+        main_text = soup.find('div',class_="post-entry blockquote-style-1")
+        return main_text.text
+
+    def extract_author(self, soup):
         pass
-    def extract_date(self, content):
-        pass
+    def extract_date(self, soup):
+        date = soup.find('time',class_="entry-date published")
+        return date['datetime']
+        
     def extract_images(self, content):
         pass
 # Changing block ends here
 
-    def save_csv(self, text,author,date):
-        print("saved HTML:",text,author,date)
-    def save_sql(self, text,author,date):
-        print("saved csv:",text,author,date)
+    def save_csv(self, title,text,author,date):
+
+        file_name = "result_data.csv"
+
+        # Open the file in append mode
+        with open(file_name, mode="a", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+
+            # Write the header only if the file is empty
+            if file.tell() == 0:  # Check if the file is empty
+                writer.writerow(["Title","Text","Author", "Date"])
+            
+            # Write the data
+            writer.writerow([title,text, author, date])
+
+        print(f"Data saved to {file_name}")
+
+
+    def save_sql(self, title,text,author,date):
+        pass
