@@ -51,7 +51,7 @@ class Website_Scrapper:
             print("extracting", url)
             driver.get(url)
             html_content = driver.page_source
-            links_content.append(html_content)
+            links_content.append((html_content,url))
         return links_content
 
 class Content_Cleaner:
@@ -82,7 +82,7 @@ class Content_Cleaner:
         pass
 # Changing block ends here
 
-    def save_csv(self, title,text,author,date, filename):
+    def save_csv(self, title,text,author,date, filename,kw,url):
 
         file_name = filename+"_data.csv"
         print("saving", file_name)
@@ -96,7 +96,7 @@ class Content_Cleaner:
                 writer.writerow(["Title","Text","Author", "Date"])
             
             # Write the data
-            writer.writerow([title,text, author, date])
+            writer.writerow([title,text, author, date, kw, url])
 
         print(f"Data saved to {file_name}")
 

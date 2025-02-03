@@ -46,7 +46,7 @@ def run_search(keyword, website_search,firefox_options):
 
     return content
 
-def extract_content(cleaner, content, filename):
+def extract_content(cleaner, content, filename,kw,url):
     processed_html = cleaner.process_html(content)
     title = cleaner.extract_title(processed_html)
     text = cleaner.extract_main_text(processed_html)
@@ -54,7 +54,7 @@ def extract_content(cleaner, content, filename):
     date = cleaner.extract_date(processed_html)
     #images = cleaner.extract_images(processed_html)
     cleaner.save_sql(title,text,author,date)
-    cleaner.save_csv(title,text,author,date,filename)
+    cleaner.save_csv(title,text,author,date,filename,kw,url)
 
 def report_search():
     pass
@@ -72,7 +72,7 @@ for i in search:
         if website_search.id == 0:
             cleaner = Content_Cleaner("padrao",0)
             for i in content:
-                extract_content(cleaner,i, filename)
+                extract_content(cleaner,i[0], filename,kw,i[1])
         elif website_search.id == 1:
             pass
         else:
