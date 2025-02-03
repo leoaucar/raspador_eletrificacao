@@ -5,7 +5,7 @@
 #SETUP_REPORT
 #SETUP_EXPORT
 
-from interface import test_data, test_search
+from interface import test_data, test_search, file_name_input
 from scrapper import Website_Scrapper, Content_Cleaner
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
@@ -41,12 +41,12 @@ def run_search(keyword, website_search,firefox_options):
         links.extend(new_links)
         if len(new_links) == 0:
             break
-        page, current_page = website_search.next_page(keyword, current_page,firefox_options)
+        page, current_page = website_search.next_page(pattern, current_page,firefox_options)
     content = website_search.extract_links_content(links, firefox_options)
 
     return content
 
-def extract_content(cleaner, content):
+def extract_content(cleaner, content, filename):
     processed_html = cleaner.process_html(content)
     title = cleaner.extract_title(processed_html)
     text = cleaner.extract_main_text(processed_html)
@@ -54,22 +54,26 @@ def extract_content(cleaner, content):
     date = cleaner.extract_date(processed_html)
     #images = cleaner.extract_images(processed_html)
     cleaner.save_sql(title,text,author,date)
-    cleaner.save_csv(title,text,author,date)
+    cleaner.save_csv(title,text,author,date,filename)
 
 def report_search():
     pass
 
+filename = file_name_input()
 #realiza as buscas para cada caso (IRA VIRAR FUNÇÂO QUANDO INTEGRAR COM INTERFACE)
 keywords = test_search
 search = setup_search(test_data)
+
+
 for i in search:
+    website_search = search[i]
     for kw in keywords:
-        content = run_search(kw, search[i],firefox_options)
-        if search[i].id == 0:
+        content = run_search(kw, website_search,firefox_options)
+        if website_search.id == 0:
             cleaner = Content_Cleaner("padrao",0)
             for i in content:
-                extract_content(cleaner,i)
-        elif search[i].id == 1:
+                extract_content(cleaner,i, filename)
+        elif website_search.id == 1:
             pass
         else:
             print("error, no scrapper ID associated with ", i)

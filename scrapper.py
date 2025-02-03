@@ -11,8 +11,7 @@ class Website_Scrapper:
         self.id = id
 
     def kw_pattern_maker(self, keyword):
-        keyword = keyword.replace(' ', '+')
-        pattern = keyword
+        pattern = keyword.replace(' ', '+')
         return pattern
     
     # This will change in inheritance
@@ -49,6 +48,7 @@ class Website_Scrapper:
         links_content = []
         driver = webdriver.Firefox(selenium_options)
         for url in links:
+            print("extracting", url)
             driver.get(url)
             html_content = driver.page_source
             links_content.append(html_content)
@@ -82,9 +82,10 @@ class Content_Cleaner:
         pass
 # Changing block ends here
 
-    def save_csv(self, title,text,author,date):
+    def save_csv(self, title,text,author,date, filename):
 
-        file_name = "result_data.csv"
+        file_name = filename+"_data.csv"
+        print("saving", file_name)
 
         # Open the file in append mode
         with open(file_name, mode="a", newline="", encoding="utf-8") as file:
