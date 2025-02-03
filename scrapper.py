@@ -2,8 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import csv
+import html
+import re
 
-
+#base class for scrapping
 class Website_Scrapper:
     def __init__(self,website,url,id):
         self.website = website
@@ -54,6 +56,7 @@ class Website_Scrapper:
             links_content.append((html_content,url))
         return links_content
 
+#basic class for html processsing and info extractions
 class Content_Cleaner:
     def __init__(self,website, id):
         self.website = website
@@ -93,7 +96,7 @@ class Content_Cleaner:
 
             # Write the header only if the file is empty
             if file.tell() == 0:  # Check if the file is empty
-                writer.writerow(["Title","Text","Author", "Date"])
+                writer.writerow(["Titulo","Texto Noticia","Autor", "Data", "Buscas", "URL"])
             
             # Write the data
             writer.writerow([title,text, author, date, kw, url])
@@ -103,3 +106,51 @@ class Content_Cleaner:
 
     def save_sql(self, title,text,author,date):
         pass
+
+
+##CLASSES PARA O AUTODATA
+class AutoDataScrapper(Website_Scrapper):
+    def search_kw(self, keyword_pattern, current_page, selenium_options):
+        driver = webdriver.Firefox(selenium_options)
+        schema_url = "https://"
+        final_url = schema_url+self.url+'/busca/?p='+ str(current_page) +'&palavra='+keyword_pattern
+        driver.get(final_url)
+        page = driver.page_source
+        driver.quit()
+        print("searching",final_url)
+        #r = requests.get(schema_url+self.url+'/page/'+ str(current_page) +'/?s='+keyword_pattern)
+        #page = r.text
+        return page
+
+    def get_links(self, page):
+        new_links = []
+        soup = BeautifulSoup(page, "html.parser")
+        for link in soup.find_all('li', class_="titulo-ultimas-noticias"):
+            new_links.append(link.find('a').get('href'))
+        return new_links
+
+
+class AutoDataCleaner(Content_Cleaner):
+    # This will change in inheritance
+    def extract_title(self, soup):
+        title = soup.find('h1', class_="titulo-post-noticia-interna")
+        return title.text
+
+    def extract_main_text(self, soup):
+        main_text = str(soup.find('iframe'))
+        main_text = html.unescape(main_text)
+        # Remove todas as tags HTML
+        main_text = re.sub(r'<[^>]+>', '', main_text)
+        main_text.strip()
+        return main_text
+
+    def extract_author(self, soup):
+        pass
+    def extract_date(self, soup):
+        date = soup.find('div',class_="data-noticia")
+        return date.text
+        
+    def extract_images(self, content):
+        pass
+
+##FUTURAS CLASSES PARA MAIS SITES
