@@ -6,7 +6,7 @@
 #SETUP_EXPORT
 
 from interface import test_data, test_search, file_name_input
-from scrapper import Website_Scrapper, Content_Cleaner, AutoDataScrapper, AutoDataCleaner
+from scrapper import Website_Scrapper, Content_Cleaner, AutoDataScrapper, AutoDataCleaner, DiarioABCScrapper, DiarioABCCleaner
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
@@ -26,6 +26,8 @@ def setup_search(sites):
             search[i['name']+'_scrapper'] = Website_Scrapper(website,url,cleaner_id)
         elif i['scrapper_id'] == 1:
             search[i['name']+'_scrapper'] = AutoDataScrapper(website,url,cleaner_id)
+        elif i['scrapper_id'] == 2:
+            search[i['name']+'_scrapper'] = DiarioABCScrapper(website,url,cleaner_id)
         else:
             print("error, no scrapper ID associated with ", i['name'])
             break
@@ -89,6 +91,14 @@ for i in search:
                     continue
         elif website_search.id == 1:
             cleaner = AutoDataCleaner("padrao",0)
+            for i in content:
+                try:
+                    extract_content(cleaner,i[0], filename,kw,i[1])
+                except:
+                    print("erro na extração")
+                    continue
+        elif website_search.id == 2:
+            cleaner = DiarioABCCleaner("padrão",0)
             for i in content:
                 try:
                     extract_content(cleaner,i[0], filename,kw,i[1])

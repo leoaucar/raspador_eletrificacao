@@ -56,7 +56,6 @@ class Website_Scrapper:
             links_content.append((html_content,url))     
         driver.quit()
         return links_content
-        
 
 #basic class for html processsing and info extractions
 class Content_Cleaner:
@@ -134,7 +133,6 @@ class AutoDataScrapper(Website_Scrapper):
             new_links.append(link.find('a').get('href'))
         return new_links
 
-
 class AutoDataCleaner(Content_Cleaner):
     # This will change in inheritance
     def extract_title(self, soup):
@@ -157,6 +155,56 @@ class AutoDataCleaner(Content_Cleaner):
     def extract_date(self, soup):
         date = soup.find('div',class_="data-noticia")
         return date.text
+        
+    def extract_images(self, content):
+        pass
+
+#CLASSES PARA DIARIO ABC
+class DiarioABCScrapper(Website_Scrapper):
+    def kw_pattern_maker(self, keyword):
+        pattern = keyword.replace(' ', '%20')
+        return pattern
+
+    def search_kw(self, keyword_pattern, current_page, selenium_options):
+        driver = webdriver.Firefox(selenium_options)
+        schema_url = "https://"
+        final_url = schema_url+self.url+'/Buscas/Home?palavra='+keyword_pattern+ '&pagina='+ str(current_page)
+        driver.get(final_url)
+        page = driver.page_source
+        driver.quit()
+        print("searching",final_url)
+        #r = requests.get(schema_url+self.url+'/page/'+ str(current_page) +'/?s='+keyword_pattern)
+        #page = r.text
+        return page
+
+    def get_links(self, page):
+        new_links = []
+        soup = BeautifulSoup(page, "html.parser")
+        for link in soup.find_all('a', class_="titulo"):
+            new_links.append("https://www.dgabc.com.br"+link.get('href'))
+        return new_links
+
+class DiarioABCCleaner(Content_Cleaner):
+    # This will change in inheritance
+    def extract_title(self, soup):
+        title = soup.find('div', class_="_noticiaTitulo")
+        title = title.text.strip()
+        return title
+
+    def extract_main_text(self, soup):
+        main_text = soup.find('div', class_="_noticiaMateria")
+        lines = main_text.text.strip().split("\n")
+        lines = lines[:-2]
+        cleaned_text = re.sub(r'\n\s*\n+', '\n\n', "\n".join(lines))
+        return cleaned_text
+
+    def extract_author(self, soup):
+        pass
+
+    def extract_date(self, soup):
+        date = soup.find('div',class_="_noticiaDataPublicacao")
+        date = date.text.strip()[0:9]
+        return date
         
     def extract_images(self, content):
         pass
