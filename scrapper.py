@@ -82,7 +82,10 @@ class Content_Cleaner:
 
     def extract_date(self, soup):
         date = soup.find('time',class_="entry-date published")
-        return date['datetime']
+        timestamp = str(date['datetime'])
+        pattern = r"(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}:\d{2}[-+]\d{2}:\d{2}"
+        formatted_date = re.sub(pattern, r"\3/\2/\1", timestamp)
+        return formatted_date
         
     def extract_images(self, content):
         pass
@@ -144,7 +147,10 @@ class AutoDataCleaner(Content_Cleaner):
         # Remove todas as tags HTML
         main_text = re.sub(r'<[^>]+>', '', main_text)
         main_text.strip()
-        return main_text
+        lines = main_text.strip().split("\n")
+        cleaned_lines = lines[1:-1]
+        cleaned_text = re.sub(r'\n\s*\n+', '\n\n', "\n".join(cleaned_lines))
+        return cleaned_text
 
     def extract_author(self, soup):
         pass
