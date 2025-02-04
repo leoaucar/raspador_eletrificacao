@@ -45,6 +45,7 @@ def run_search(keyword, website_search,firefox_options):
                 break
             page, current_page = website_search.next_page(pattern, current_page,firefox_options)
         except:
+            print("erro acessando", page)
             continue
     content = website_search.extract_links_content(links, firefox_options)
 
@@ -57,7 +58,7 @@ def extract_content(cleaner, content, filename,kw,url):
     author = cleaner.extract_author(processed_html)
     date = cleaner.extract_date(processed_html)
     #images = cleaner.extract_images(processed_html)
-    cleaner.save_sql(title,text,author,date)
+    #cleaner.save_sql(title,text,author,date)
     cleaner.save_csv(title,text,author,date,filename,kw,url)
 
 def report_search():
@@ -72,18 +73,28 @@ search = setup_search(test_data)
 for i in search:
     website_search = search[i]
     for kw in keywords:
+        print("searching for", kw)
         try:
             content = run_search(kw, website_search,firefox_options)
-            if website_search.id == 0:
-                cleaner = Content_Cleaner("padrao",0)
-                for i in content:
-                    extract_content(cleaner,i[0], filename,kw,i[1])
-            elif website_search.id == 1:
-                cleaner = AutoDataCleaner("padrao",0)
-                for i in content:
-                    extract_content(cleaner,i[0], filename,kw,i[1])
-                pass
-            else:
-                print("error, no scrapper ID associated with ", i)
         except:
+            print("Erro na criação de busca para", kw)
             continue
+        if website_search.id == 0:
+            cleaner = Content_Cleaner("padrao",0)
+            for i in content:
+                try:
+                    extract_content(cleaner,i[0], filename,kw,i[1])
+                except:
+                    print("erro na extração")
+                    continue
+        elif website_search.id == 1:
+            cleaner = AutoDataCleaner("padrao",0)
+            for i in content:
+                try:
+                    extract_content(cleaner,i[0], filename,kw,i[1])
+                except:
+                    print("erro na extração")
+                    continue
+        else:
+            print("error, no scrapper ID associated with ", i)
+    

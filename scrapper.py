@@ -53,8 +53,10 @@ class Website_Scrapper:
             print("extracting", url)
             driver.get(url)
             html_content = driver.page_source
-            links_content.append((html_content,url))
+            links_content.append((html_content,url))     
+        driver.quit()
         return links_content
+        
 
 #basic class for html processsing and info extractions
 class Content_Cleaner:
@@ -77,6 +79,7 @@ class Content_Cleaner:
 
     def extract_author(self, soup):
         pass
+
     def extract_date(self, soup):
         date = soup.find('time',class_="entry-date published")
         return date['datetime']
@@ -88,7 +91,6 @@ class Content_Cleaner:
     def save_csv(self, title,text,author,date, filename,kw,url):
 
         file_name = filename+"_data.csv"
-        print("saving", file_name)
 
         # Open the file in append mode
         with open(file_name, mode="a", newline="", encoding="utf-8") as file:

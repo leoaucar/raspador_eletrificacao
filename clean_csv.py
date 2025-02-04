@@ -16,6 +16,6 @@ def remove_duplicates(csv_file, output_file):
         print(f"Error processing CSV: {e}")
 
 # Example usage
-input_csv = "diario_data.csv"  # Replace with your input CSV file
-output_csv = "diario_sem_duplicados_data.csv"  # Output file without duplicates
+input_csv = "teste_erros5_data.csv"  # Replace with your input CSV file
+output_csv = "sem_duplicados_data.csv"  # Output file without duplicates
 remove_duplicates(input_csv, output_csv)
