@@ -210,3 +210,49 @@ class DiarioABCCleaner(Content_Cleaner):
         pass
 
 ##FUTURAS CLASSES PARA MAIS SITES
+class SindicatoCuritibaScrapper(Website_Scrapper):
+
+    def search_kw(self, keyword_pattern, current_page, selenium_options):
+        driver = webdriver.Firefox(selenium_options)
+        schema_url = "https://"
+        final_url = schema_url+self.url+'/?area=busca&palavra='+keyword_pattern+ '&pagina='+ str(current_page)
+        driver.get(final_url)
+        page = driver.page_source
+        driver.quit()
+        print("searching",final_url)
+        #r = requests.get(schema_url+self.url+'/page/'+ str(current_page) +'/?s='+keyword_pattern)
+        #page = r.text
+        return page
+
+    def get_links(self, page):
+        new_links = []
+        soup = BeautifulSoup(page, "html.parser")
+        site_content = soup.find('div', class_="site-content")
+        for link in site_content.find_all('h2', class_="entry-title"):
+            new_links.append("https://www.simec.com.br"+link.find('a').get('href'))
+        return new_links
+    
+class SindicatoCuritibaCleaner(Content_Cleaner):
+    # This will change in inheritance
+    def extract_title(self, soup):
+        title = soup.find('h2', class_="entry-title")
+        title = title.text.strip()
+        return title
+
+    def extract_main_text(self, soup):
+        main_text = soup.find('div', class_="entry-content")
+        lines = main_text.text.strip().split("\n")
+        #lines = lines[:-8]
+        cleaned_text = re.sub(r'\n\s*\n+', '\n\n', "\n".join(lines))
+        return cleaned_text
+
+    def extract_author(self, soup):
+        pass
+
+    def extract_date(self, soup):
+        date = soup.find('li',class_="publish-date")
+        date = date.text.strip()
+        return date
+        
+    def extract_images(self, content):
+        pass
